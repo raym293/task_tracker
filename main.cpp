@@ -24,6 +24,11 @@ struct Task {
         time(&temp);
         timeCreated = timeUpdated = temp;
     } 
+    Task(std::string description) : description(description), status("todo") {
+        time_t temp;
+        time(&temp);
+        timeCreated = timeUpdated = temp;
+    } 
     void Print() {
         std::cout << description << '\n';
         std::cout << status << '\n';
@@ -41,6 +46,32 @@ int main(int argc, char *argv[]) {
         tasks.push_back(Task(data[std::to_string(i)]));
     }
     if(argc == 1 || (std::string)argv[1] == "view") {
+        int counter = 1;
+        for(auto i:tasks)
+        {
+            std::cout << counter++ << ". ";
+            i.Print();
+        }
+    }
+    else if((std::string)argv[1] == "add") {
+        std::string desc = argv[2];
+        for(int i = 3; i < argc; i++) {
+            desc+=" "+(std::string)argv[i];
+        }
+        tasks.push_back(Task(desc));
+        std::cout << "Successfully added new task\n";
+        tasks.back().Print();
+    }
+    else if((std::string)argv[1] == "delete") {
+        int index = atoi(argv[2]);
+        if(index>0 && index<(int)tasks.size())
+        {
+            std::cout << "Deleting task: " << index <<"...\n";
+            tasks[index-1].Print();
+            tasks.erase(tasks.begin()+index-1);
+            std::cout << "Deleted!\n\n";
+        }
+        else std::cout << "Error: out of bounds.\n";
         for(auto i:tasks) i.Print();
     }
     return 0;
