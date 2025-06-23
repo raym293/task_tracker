@@ -8,6 +8,8 @@
 
 ---
 
+> **Project Source:** This project idea and requirements were inspired by [roadmap.sh Task Tracker Project](https://roadmap.sh/projects/task-tracker).
+
 A simple, modern command-line task tracker written in C++ with JSON-based persistent storage. Effortlessly manage your tasks from the terminal with a clean and intuitive interface.
 
 ---

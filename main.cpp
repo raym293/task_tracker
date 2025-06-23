@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
             for(int i = 3; i < argc; i++) {
                 description+=" "+(std::string)argv[i];
             }
-            tasks[index].description = description;
+            tasks[index-1].description = description;
             std::cout << "Updated!\n\n";
         }
         else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
