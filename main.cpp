@@ -50,23 +50,14 @@ int main(int argc, char *argv[]) {
             tasks.push_back(Task(data[std::to_string(i)]));
         }
     }
-    // std::cout << data.dump(4) << "\n\n\n";
-    if(argc == 1 || (std::string)argv[1] == "view") {
-        int counter = 1;
-        for(auto i:tasks)
-        {
-            std::cout << counter++ << ". ";
-            i.Print();
-        }
-    } 
-    else if((std::string)argv[1] == "add") {
+    // std::cout << data.dump(4) << "\n\n\n"; 
+    if((std::string)argv[1] == "add") {
         std::string desc = argv[2];
         for(int i = 3; i < argc; i++) {
             desc+=" "+(std::string)argv[i];
         }
         tasks.push_back(Task(desc));
         std::cout << "Successfully added new task\n";
-        tasks.back().Print();
     }
     else if((std::string)argv[1] == "delete") {
         int index = atoi(argv[2]);
@@ -78,7 +69,6 @@ int main(int argc, char *argv[]) {
             std::cout << "Deleted!\n\n";
         }
         else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
-        for(auto i:tasks) i.Print();
     }
     else if((std::string)argv[1] == "update") {
         int index = atoi(argv[2]);
@@ -94,13 +84,50 @@ int main(int argc, char *argv[]) {
             std::cout << "Updated!\n\n";
         }
         else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
-        for(auto i:tasks) i.Print();
-
     }
-
+    else if((std::string)argv[1] == "mark-in-progress") {
+        int index = atoi(argv[2]);
+        if(index>0 && index<=(int)tasks.size())
+        {
+            tasks[index-1].status = "in-progress";
+        }
+        else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
+    }
+    else if((std::string)argv[1] == "mark-done") {
+        int index = atoi(argv[2]);
+        if(index>0 && index<=(int)tasks.size())
+        {
+            tasks[index-1].status = "done";
+        }
+        else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
+    }
+    // print all tasks
+    int counter = 1;
+    std::string op = argv[1];
+    if(op == "update" || (op == "list" && argc == 2) || op == "delete" || op == "add")
+    {   
+        for(auto i:tasks)
+        {
+            std::cout << counter++ << ". ";
+            i.Print();
+        }
+    }
+    else if(op == "list" && argc == 3) {
+        for(auto i:tasks)
+        {
+            if(i.status == std::string(argv[2]))
+            {
+                std::cout << counter << ". ";
+                i.Print();
+            }
+            counter++;
+        }
+        
+    }
+    
     // write to json
     json output;
-    int counter = 1;
+    counter = 1;
     // "date created": "",
     // "date updated": "",
     // "description": "Task three",
