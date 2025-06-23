@@ -14,16 +14,17 @@ using json = nlohmann::json;
 // createdAt: The date and time when the task was created
 // updatedAt: The date and time when the task was last updated
 
+// TODO
+// Add error handeling
 struct Task {
     std::string description;
     std::string status;
     time_t timeCreated;
     time_t timeUpdated;
-    Task(json obj) : description(obj["description"]), status(obj["status"]) {
-        time_t temp;
-        time(&temp);
-        timeCreated = timeUpdated = temp;
-    } 
+    Task(json obj) : description(obj["description"]),
+     status(obj["status"]),
+     timeCreated(std::stoll((std::string)obj["date created"])),
+     timeUpdated(std::stoll((std::string)obj["date updated"])) {} 
     Task(std::string description) : description(description), status("todo") {
         time_t temp;
         time(&temp);
@@ -39,12 +40,17 @@ struct Task {
 
 int main(int argc, char *argv[]) {
     std::ifstream f("data.json");
-    json data = json::parse(f);
-    int numberOfTasks = data.size();
     std::vector<Task> tasks;
-    for(int i = 1; i <= numberOfTasks; i++) {
-        tasks.push_back(Task(data[std::to_string(i)]));
+    int numberOfTasks;
+    json data;
+    if(f) {
+        data = json::parse(f);
+        numberOfTasks = data.size();
+        for(int i = 1; i <= numberOfTasks; i++) {
+            tasks.push_back(Task(data[std::to_string(i)]));
+        }
     }
+    // std::cout << data.dump(4) << "\n\n\n";
     if(argc == 1 || (std::string)argv[1] == "view") {
         int counter = 1;
         for(auto i:tasks)
@@ -52,7 +58,7 @@ int main(int argc, char *argv[]) {
             std::cout << counter++ << ". ";
             i.Print();
         }
-    }
+    } 
     else if((std::string)argv[1] == "add") {
         std::string desc = argv[2];
         for(int i = 3; i < argc; i++) {
@@ -64,15 +70,51 @@ int main(int argc, char *argv[]) {
     }
     else if((std::string)argv[1] == "delete") {
         int index = atoi(argv[2]);
-        if(index>0 && index<(int)tasks.size())
+        if(index>0 && index<=(int)tasks.size())
         {
             std::cout << "Deleting task: " << index <<"...\n";
             tasks[index-1].Print();
             tasks.erase(tasks.begin()+index-1);
             std::cout << "Deleted!\n\n";
         }
-        else std::cout << "Error: out of bounds.\n";
+        else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
         for(auto i:tasks) i.Print();
     }
+    else if((std::string)argv[1] == "update") {
+        int index = atoi(argv[2]);
+        if(index>0 && index<=(int)tasks.size())
+        {
+            std::cout << "Updating task: " << index <<"...\n";
+            
+            std::string description = (std::string)argv[3];
+            for(int i = 3; i < argc; i++) {
+                description+=" "+(std::string)argv[i];
+            }
+            tasks[index].description = description;
+            std::cout << "Updated!\n\n";
+        }
+        else std::cout << "Error: out of bounds there are only " << tasks.size() << " notes\n";
+        for(auto i:tasks) i.Print();
+
+    }
+
+    // write to json
+    json output;
+    int counter = 1;
+    // "date created": "",
+    // "date updated": "",
+    // "description": "Task three",
+    // "status": "in_progress"
+    for(auto i:tasks) {
+        output[std::to_string(counter++)] = {
+            {"date created", std::to_string(i.timeCreated)},
+            {"date updated",std::to_string(i.timeUpdated)},
+            {"description",i.description},
+            {"status",i.status}
+        };
+    }
+    std::ofstream o("data.json");
+    // std::cout << output.dump(4);
+    o << output.dump(4);
     return 0;
 }

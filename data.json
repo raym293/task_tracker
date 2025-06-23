@@ -1,20 +1,8 @@
 {
     "1": {
-        "date created": "",
-        "date updated": "",
-        "description": "Task one",
+        "date created": "1750701981",
+        "date updated": "1750701981",
+        "description": "This is a test note",
         "status": "todo"
-    },
-    "2": {
-        "date created": "",
-        "date updated": "",
-        "description": "Task two",
-        "status": "completed"
-    },
-    "3": {
-        "date created": "",
-        "date updated": "",
-        "description": "Task three",
-        "status": "in_progress"
     }
 }
